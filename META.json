@@ -16,19 +16,25 @@
    "prereqs" : {
       "build" : {
          "requires" : {
+            "Test::Differences" : "0",
             "Test::More" : "0"
          }
       },
       "configure" : {
          "requires" : {
-            "Module::Build" : "0"
+            "Module::Build" : "0.37"
+         }
+      },
+      "runtime" : {
+         "requires" : {
+            "perl" : "v5.10.0"
          }
       }
    },
    "provides" : {
       "Run::Parts" : {
          "file" : "lib/Run/Parts.pm",
-         "version" : "0.01"
+         "version" : "0.02"
       }
    },
    "release_status" : "stable",
@@ -37,5 +43,5 @@
          "http://dev.perl.org/licenses/"
       ]
    },
-   "version" : "0.01"
+   "version" : "0.02"
 }

@@ -10,17 +10,18 @@ my $builder = Module::Build->new(
     dist_version_from   => 'lib/Run/Parts.pm',
     release_status      => 'stable',
     configure_requires => {
-        'Module::Build' => 0,
+        'Module::Build' => '0.37',
     },
     build_requires => {
         'Test::More' => 0,
+        'Test::Differences' => 0,
     },
     requires => {
+        perl => '5.10.0',
         #'ABC'              => 1.6,
         #'Foo::Bar::Module' => 5.0401,
     },
-    add_to_cleanup     => [ 'Run-Parts-*' ],
-    create_makefile_pl => 'traditional',
+    add_to_cleanup     => [ 'Run-Parts-*', 'Makefile.PL' ],
 );
 
 $builder->create_build_script();

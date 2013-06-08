@@ -3,9 +3,10 @@ abstract: "Perl interface to Debian's run-parts tool"
 author:
   - 'Axel Beckert <abe@deuxchevaux.org>'
 build_requires:
+  Test::Differences: 0
   Test::More: 0
 configure_requires:
-  Module::Build: 0
+  Module::Build: 0.37
 dynamic_config: 1
 generated_by: 'Module::Build version 0.38, CPAN::Meta::Converter version 2.120921'
 license: perl
@@ -16,7 +17,9 @@ name: Run-Parts
 provides:
   Run::Parts:
     file: lib/Run/Parts.pm
-    version: 0.01
+    version: 0.02
+requires:
+  perl: v5.10.0
 resources:
   license: http://dev.perl.org/licenses/
-version: 0.01
+version: 0.02

@@ -2,12 +2,10 @@ Build.PL
 Changes
 lib/Run/Parts.pm
 MANIFEST			This list of files
+META.json
+META.yml
 README
 t/00-load.t
-t/manifest.t
-t/pod-coverage.t
-t/pod.t
-t/boilerplate.t
 t/basic-dummy/bar
 t/basic-dummy/fnord~
 t/basic-dummy/foo
@@ -15,6 +13,7 @@ t/basic-dummy/script
 t/basic-dummy/script~
 t/basic-dummy/script2
 t/basic-functionality.t
-Makefile.PL
-META.yml
-META.json
+t/boilerplate.t
+t/manifest.t
+t/pod-coverage.t
+t/pod.t
