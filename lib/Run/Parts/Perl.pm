@@ -1,27 +1,29 @@
-package Run::Parts;
+package Run::Parts::Perl;
 
 use 5.010;
 use strict;
 use warnings FATAL => 'all';
+use autodie;
+use Taint::Util;
 
 =encoding utf8
 
 =head1 NAME
 
-Run::Parts - Offers functionality of Debian's run-parts tool in Perl.
+Run::Parts::Perl - Pure Perl implementation of Debian's run-parts tool
 
 =head1 VERSION
 
-Version 0.03
+Version 0.01
 
 =cut
 
-our $VERSION = '0.03';
+our $VERSION = '0.01';
 
 
 =head1 SYNOPSIS
 
-Run::Parts offers functionality of Debian's run-parts tool in Perl.
+Pure Perl reimplementation of basic functionality of Debian's run-parts tool.
 
 run-parts runs all the executable files named within constraints
 described below, found in the given directory.  Other files and
@@ -34,31 +36,8 @@ e.g. backup files), but don't actually run them.
 This is useful when functionality or configuration is split over
 multiple files in one directory.
 
-Perhaps a little code snippet.
-
-    use Run::Parts;
-
-    my $rp  = Run::Parts->new('directory'); # chooses backend automatically
-    my $rpp = Run::Parts->new('directory', 'perl'); # pure perl backend
-    my $rpd = Run::Parts->new('directory', 'debian'); # uses /bin/run-parts
-
-    my @file_list        = $rp->list;
-    my @executables_list = $rpp->test;
-    my $commands_output  = $rpd->run;
-    ...
-
-=head1 BACKENDS
-
-Run::Parts contains two backend implementation. Run::Parts::Debian
-actually uses /bin/run-parts and Run::Parts::Perl is a pure Perl
-implementation of a basic set of run-parts' functionality.
-
-Run::Parts::Debian may or may not work with RedHat's simplified
-shell-script based reimplementation of Debian's run-parts.
-
-By default Run::Parts uses Run::Parts::Debian if /bin/run-parts
-exists, Run::Parts::Perl otherwise. But you can also choose any of the
-backends explicitly.
+This module is not thought to be used directly and its interface may
+change. See Run::Parts for a stable user interface.
 
 =head1 METHODS
 
@@ -74,82 +53,83 @@ sub new {
     bless($self, shift);
     $self->{dir} = shift;
 
-    my $backend = shift;
-    if (defined $backend) {
-        if (ref $backend) {
-            $self->{backend} = $backend->new($self->{dir});
-        } elsif ($backend eq 'debian' or $backend eq 'run-parts') {
-            use Run::Parts::Debian;
-            $self->{backend} = Run::Parts::Debian->new($self->{dir});
-        } elsif ($backend eq 'perl' or $backend eq 'module') {
-            use Run::Parts::Perl;
-            $self->{backend} = Run::Parts::Perl->new($self->{dir});
-        } else {
-            warn "Unknown backend $backend in use";
-            require $backend;
-            $self->{backend} = $backend->new($self->{dir});
-        }
-    } else {
-        if (-x '/bin/run-parts') {
-            $self->{backend} = Run::Parts::Debian->new($self->{dir});
-        } else {
-            $self->{backend} = Run::Parts::Perl->new($self->{dir});
-        }
-    }
-
     return $self;
 }
 
 =head2 run_parts_command
 
-Returns the run-parts to run with the given command parameter
+Executes the given action with the given parameters
 
 =cut
 
 sub run_parts_command {
     my $self = shift;
-    return $self->{backend}->run_parts_command(@_);
+    my $rp_cmd = shift // 'run';
+
+    my @result = $self->$rp_cmd(@_);
+
+    return wantarray ? @result : join("\n", @result)."\n";
 }
 
 =head2 list
 
 Lists all relevant files in the given directory. Equivalent to
-"run-parts --list".
+"run-parts --list". Returns an array.
 
 =cut
 
 sub list {
     my $self = shift;
-    return $self->run_parts_command('list');
+    my $dir = $self->{dir};
+
+    opendir(my $dh, $dir);
+    my @list = sort map {
+        if (defined($dir) and $dir ne '') {
+            "$dir/$_";
+        } else {
+            $_;
+        }
+    } grep {
+        /^[-A-Za-z0-9_]+$/
+    } readdir($dh);
 }
 
 =head2 test
 
 Lists all relevant executables in the given directory. Equivalent to
-"run-parts --test".
+"run-parts --tests". Returns an array.
 
 =cut
 
 sub test {
     my $self = shift;
-    return $self->run_parts_command('test');
+    my $dir = $self->{dir};
+
+    return grep { -x } $self->list($dir);
 }
 
 =head2 run
 
-Runs all relevant executables in the given directory. Equivalent to
-"run-parts".
+Executes all relevant executables in the given directory. Equivalent to
+"run-parts --tests". Returns an array.
 
 =cut
 
 sub run {
     my $self = shift;
-    return $self->run_parts_command();
+    my $dir = $self->{dir};
+
+    return map {
+        untaint($_);
+        my $output = `$_`;
+        chomp($output);
+        $output;
+    } $self->test($dir);
 }
 
 =head1 SEE ALSO
 
-run-parts(8), Run::Parts::Debian, Run::Parts::Perl
+Run::Parts, run-parts(8)
 
 =head1 AUTHOR
 
