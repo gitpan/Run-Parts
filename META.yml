@@ -7,7 +7,7 @@ configure_requires:
   Modern::Perl: 0
   Module::Build: 0.37
 dynamic_config: 1
-generated_by: 'Module::Build version 0.4005, CPAN::Meta::Converter version 2.120921'
+generated_by: 'Module::Build version 0.38, CPAN::Meta::Converter version 2.120921'
 license: perl
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
@@ -16,7 +16,7 @@ name: Run-Parts
 provides:
   Run::Parts:
     file: lib/Run/Parts.pm
-    version: 0.04
+    version: 0.05
   Run::Parts::Common:
     file: lib/Run/Parts/Common.pm
     version: 0.01
@@ -37,9 +37,4 @@ resources:
   bugtracker: https://rt.cpan.org/Dist/Display.html?Name=Run-Parts
   license: http://dev.perl.org/licenses/
   repository: https://github.com/xtaran/run-parts
-version: 0.04
-x_test_requires:
-  File::Slurp: 9999.06
-  Test::Differences: 0
-  Test::More: 0
-  Test::NoWarnings: 0
+version: 0.05

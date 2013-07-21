@@ -1,5 +1,11 @@
 Revision history for Run-Parts
 
+0.05    Sun 21 Jul 17:56:01 CEST 2013
+
+        Fix test skipping numbers in t/basic-functionality.t.
+
+        Documentation deduplication.
+
 0.04    Wed Jul 10 19:55:57 CEST 2013
 
         New method concat.
